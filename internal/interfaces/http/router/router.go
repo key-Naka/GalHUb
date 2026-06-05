@@ -1,12 +1,13 @@
 package router
 
 import (
+	"galhub/internal/bootstrap"
 	"galhub/internal/interfaces/http/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter() *gin.Engine {
+func NewRouter(bs *bootstrap.Bootstrap) *gin.Engine {
 	r := gin.Default()
 	router := []RouteGroup{
 		{
@@ -20,7 +21,9 @@ func NewRouter() *gin.Engine {
 			Path:     "/api/v1/users",
 			NeedAuth: false,
 			RegisterFns: []func(*gin.RouterGroup){
-				RegisterUser,
+				func(g *gin.RouterGroup) {
+					RegisterUser(g, bs.Handlers.User)
+				},
 			},
 		},
 	}

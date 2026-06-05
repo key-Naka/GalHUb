@@ -1,32 +1,23 @@
 package router
 
 import (
-	app "galhub/internal/app/user"
-	mysqlUser "galhub/internal/infrastructure/mysql/user"
-
 	"galhub/internal/interfaces/http/handler"
-
-	mysqlDB "galhub/internal/infrastructure/mysql"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterUser(
 	group *gin.RouterGroup,
+	handler *handler.UserHandler,
 ) {
 
-	repo := mysqlUser.NewRepository(
-		mysqlDB.DB,
+	group.POST(
+		"/register",
+		handler.Register,
 	)
 
-	service := app.NewService(
-		repo,
+	group.POST(
+		"/login",
+		handler.Login,
 	)
-
-	userHandler := handler.NewUserHandler(
-		service,
-	)
-
-	group.POST("/register", userHandler.Register)
-	group.POST("/login", userHandler.Login)
 }

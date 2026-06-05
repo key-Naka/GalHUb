@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"galhub/internal/bootstrap"
 	"galhub/internal/infrastructure/config"
 	"galhub/internal/infrastructure/mysql"
 	"galhub/internal/interfaces/http/router"
@@ -19,7 +20,9 @@ func main() {
 		log.Fatalf("Failed to init mysql: %v", err)
 	}
 	fmt.Printf("路由初始化\n")
-	r := router.NewRouter()
+	bs := bootstrap.New()
+
+	r := router.NewRouter(bs)
 
 	addr := fmt.Sprintf(
 		":%d",
