@@ -16,6 +16,13 @@ func NewRouter() *gin.Engine {
 				RegisterPing,
 			},
 		},
+		{
+			Path:     "/api/v1/users",
+			NeedAuth: false,
+			RegisterFns: []func(*gin.RouterGroup){
+				RegisterUser,
+			},
+		},
 	}
 	for _, route := range router {
 		var group *gin.RouterGroup
@@ -27,7 +34,6 @@ func NewRouter() *gin.Engine {
 		for _, fn := range route.RegisterFns {
 			fn(group)
 		}
-
 	}
 	return r
 }

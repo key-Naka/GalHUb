@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"galhub/internal/infrastructure/config"
-	"galhub/internal/infrastructure/persistence/mysql"
-	"galhub/internal/interfaces/router"
+	"galhub/internal/infrastructure/mysql"
+	"galhub/internal/interfaces/http/router"
 	"log"
 )
 
