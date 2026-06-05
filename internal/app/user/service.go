@@ -16,17 +16,23 @@ func NewService(repo domain.Repository) *Service {
 }
 
 func (s *Service) Register(ctx context.Context, cmd *RegisterCommand) error {
-	existUser, _ := s.repo.GetByUsername(
+	existUser, err := s.repo.GetByUsername(
 		ctx,
 		cmd.Username,
 	)
+	if err != nil {
+		return err
+	}
 	if existUser != nil {
 		return ErrUserExists
 	}
-	existEmail, _ := s.repo.GetByEmail(
+	existEmail, err := s.repo.GetByEmail(
 		ctx,
 		cmd.Email,
 	)
+	if err != nil {
+		return err
+	}
 	if existEmail != nil {
 		return ErrEmailExists
 	}
@@ -55,6 +61,9 @@ func (s *Service) Login(
 
 	if err != nil {
 		return nil, err
+	}
+	if user == nil {
+		return nil, ErrUserNotFound
 	}
 	err = bcrypt.CompareHashAndPassword(
 		[]byte(user.Password),

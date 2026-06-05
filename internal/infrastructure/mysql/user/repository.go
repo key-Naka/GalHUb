@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	domain "galhub/internal/domain/user"
 
 	"gorm.io/gorm"
@@ -28,6 +29,9 @@ func (r *Repository) GetByID(ctx context.Context, id uint64) (*domain.User, erro
 		Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -47,6 +51,9 @@ func (r *Repository) GetByEmail(
 		Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -66,6 +73,9 @@ func (r *Repository) GetByUsername(
 		Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
