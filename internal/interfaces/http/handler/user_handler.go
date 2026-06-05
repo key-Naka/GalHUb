@@ -2,8 +2,8 @@ package handler
 
 import (
 	app "galhub/internal/app/user"
-	"galhub/internal/interfaces/http/dto"
-	"galhub/internal/interfaces/http/response"
+	dto "galhub/internal/interfaces/http/dto/user"
+	"galhub/internal/pkg/response"
 
 	"github.com/gin-gonic/gin"
 )

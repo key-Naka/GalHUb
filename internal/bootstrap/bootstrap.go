@@ -1,9 +1,15 @@
 package bootstrap
 
+import "galhub/internal/infrastructure/config"
+
 type Bootstrap struct {
+	Config *config.Config
+
 	Repositories *Repositories
-	Services     *Services
-	Handlers     *Handlers
+
+	Services *Services
+
+	Handlers *Handlers
 }
 
 func New() *Bootstrap {

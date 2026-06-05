@@ -3,8 +3,7 @@ package user
 import (
 	"context"
 	domain "galhub/internal/domain/user"
-
-	"golang.org/x/crypto/bcrypt"
+	"galhub/internal/pkg/password"
 )
 
 type Service struct {
@@ -36,7 +35,9 @@ func (s *Service) Register(ctx context.Context, cmd *RegisterCommand) error {
 	if existEmail != nil {
 		return ErrEmailExists
 	}
-	hash, err := bcrypt.GenerateFromPassword([]byte(cmd.Password), bcrypt.DefaultCost)
+	hash, err := password.Hash(
+		cmd.Password,
+	)
 	if err != nil {
 		return err
 	}
@@ -65,12 +66,10 @@ func (s *Service) Login(
 	if user == nil {
 		return nil, ErrUserNotFound
 	}
-	err = bcrypt.CompareHashAndPassword(
-		[]byte(user.Password),
-		[]byte(cmd.Password),
-	)
-
-	if err != nil {
+	if !password.Verify(
+		user.Password,
+		cmd.Password,
+	) {
 		return nil, ErrInvalidPassword
 	}
 	return user, nil
