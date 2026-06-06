@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterUser(
+func RegisterUserPublic(
 	group *gin.RouterGroup,
 	handler *handler.UserHandler,
 ) {
@@ -19,5 +19,16 @@ func RegisterUser(
 	group.POST(
 		"/login",
 		handler.Login,
+	)
+
+}
+func RegisterUserPrivate(
+	group *gin.RouterGroup,
+	handler *handler.UserHandler,
+) {
+
+	group.GET(
+		"/profile",
+		handler.Profile,
 	)
 }

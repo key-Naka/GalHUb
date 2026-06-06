@@ -63,8 +63,35 @@ func (h *UserHandler) Login(
 	}
 
 	response.Success(c, gin.H{
+		"token":    user.Token,
 		"id":       user.ID,
 		"username": user.Username,
 		"email":    user.Email,
 	})
+}
+func (h *UserHandler) Profile(
+	c *gin.Context,
+) {
+
+	userID := c.GetUint64(
+		"user_id",
+	)
+
+	user, err := h.service.GetProfile(
+		c.Request.Context(),
+		userID,
+	)
+
+	if err != nil {
+		response.Fail(
+			c,
+			err.Error(),
+		)
+		return
+	}
+
+	response.Success(
+		c,
+		user,
+	)
 }

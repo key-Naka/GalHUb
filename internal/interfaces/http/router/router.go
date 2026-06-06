@@ -22,7 +22,16 @@ func NewRouter(bs *bootstrap.Bootstrap) *gin.Engine {
 			NeedAuth: false,
 			RegisterFns: []func(*gin.RouterGroup){
 				func(g *gin.RouterGroup) {
-					RegisterUser(g, bs.Handlers.User)
+					RegisterUserPublic(g, bs.Handlers.User)
+				},
+			},
+		},
+		{
+			Path:     "/api/v1/users",
+			NeedAuth: true,
+			RegisterFns: []func(*gin.RouterGroup){
+				func(g *gin.RouterGroup) {
+					RegisterUserPrivate(g, bs.Handlers.User)
 				},
 			},
 		},
@@ -30,7 +39,7 @@ func NewRouter(bs *bootstrap.Bootstrap) *gin.Engine {
 	for _, route := range router {
 		var group *gin.RouterGroup
 		if route.NeedAuth {
-			group = r.Group(route.Path, middleware.Auth())
+			group = r.Group(route.Path, middleware.Auth(bs.Config.JWT.Secret))
 		} else {
 			group = r.Group(route.Path)
 		}
