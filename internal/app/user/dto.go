@@ -15,3 +15,11 @@ type LoginResult struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 }
+type UpdateProfileCommand struct {
+	Nickname string
+	Avatar   string
+}
+type ChangePasswordCommand struct {
+	OldPassword string
+	NewPassword string
+}

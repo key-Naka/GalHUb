@@ -13,7 +13,9 @@ type UserModel struct {
 	Avatar   string `gorm:"size:255"`
 
 	Role   string `gorm:"size:20"`
-	Status int8
+	Status int8   `gorm:"default:1"`
+
+	LastLoginAt *time.Time
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

@@ -95,3 +95,78 @@ func (h *UserHandler) Profile(
 		user,
 	)
 }
+func (h *UserHandler) UpdateProfile(
+	c *gin.Context,
+) {
+
+	userID := c.GetUint64("user_id")
+
+	var req dto.UpdateProfileRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+
+	err := h.service.UpdateProfile(
+		c.Request.Context(),
+		userID,
+		app.UpdateProfileCommand{
+			Nickname: req.Nickname,
+			Avatar:   req.Avatar,
+		},
+	)
+
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+
+	response.Success(c, nil)
+}
+func (h *UserHandler) ChangePassword(
+	c *gin.Context,
+) {
+
+	userID := c.GetUint64(
+		"user_id",
+	)
+
+	var req dto.ChangePasswordRequest
+
+	if err := c.ShouldBindJSON(
+		&req,
+	); err != nil {
+
+		response.Fail(
+			c,
+			err.Error(),
+		)
+
+		return
+	}
+
+	err := h.service.ChangePassword(
+		c.Request.Context(),
+		userID,
+		app.ChangePasswordCommand{
+			OldPassword: req.OldPassword,
+			NewPassword: req.NewPassword,
+		},
+	)
+
+	if err != nil {
+
+		response.Fail(
+			c,
+			err.Error(),
+		)
+
+		return
+	}
+
+	response.Success(
+		c,
+		nil,
+	)
+}

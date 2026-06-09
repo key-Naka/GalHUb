@@ -31,4 +31,12 @@ func RegisterUserPrivate(
 		"/profile",
 		handler.Profile,
 	)
+	group.PUT(
+		"/profile",
+		handler.UpdateProfile,
+	)
+	group.PUT(
+		"/password",
+		handler.ChangePassword,
+	)
 }

@@ -4,9 +4,9 @@ import (
 	"context"
 	domain "galhub/internal/domain/user"
 	"galhub/internal/infrastructure/config"
-	"galhub/internal/pkg/password"
-
 	jwtpkg "galhub/internal/pkg/jwt"
+	"galhub/internal/pkg/password"
+	"time"
 )
 
 type Service struct {
@@ -91,6 +91,14 @@ func (s *Service) Login(
 	if err != nil {
 		return nil, err
 	}
+	now := time.Now()
+
+	user.LastLoginAt = &now
+
+	_ = s.repo.Update(
+		ctx,
+		user,
+	)
 	return &LoginResult{
 		Token:    token,
 		ID:       user.ID,
@@ -106,5 +114,65 @@ func (s *Service) GetProfile(
 	return s.repo.GetByID(
 		ctx,
 		userID,
+	)
+}
+func (s *Service) UpdateProfile(
+	ctx context.Context,
+	userID uint64,
+	cmd UpdateProfileCommand,
+) error {
+
+	user, err := s.repo.GetByID(
+		ctx,
+		userID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	user.Nickname = cmd.Nickname
+	user.Avatar = cmd.Avatar
+
+	return s.repo.Update(
+		ctx,
+		user,
+	)
+}
+func (s *Service) ChangePassword(
+	ctx context.Context,
+	userID uint64,
+	cmd ChangePasswordCommand,
+) error {
+
+	user, err := s.repo.GetByID(
+		ctx,
+		userID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if !password.Verify(
+		user.Password,
+		cmd.OldPassword,
+	) {
+		return ErrInvalidPassword
+	}
+
+	hash, err := password.Hash(
+		cmd.NewPassword,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	user.Password = hash
+
+	return s.repo.Update(
+		ctx,
+		user,
 	)
 }

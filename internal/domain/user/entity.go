@@ -12,8 +12,11 @@ type User struct {
 	Nickname string
 	Avatar   string
 
-	Role   string
+	Role string
+
 	Status int8
+
+	LastLoginAt *time.Time
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
