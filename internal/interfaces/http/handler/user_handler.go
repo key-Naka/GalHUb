@@ -5,6 +5,7 @@ import (
 	usercmd "galhub/internal/app/user/command"
 	dto "galhub/internal/interfaces/http/dto/user"
 	"galhub/internal/pkg/response"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,7 +33,7 @@ func (h *UserHandler) Register(
 		},
 	)
 	if err != nil {
-		response.Fail(c, err.Error())
+		respondUserError(c, err)
 		return
 	}
 	response.Success(c, nil)
@@ -58,7 +59,7 @@ func (h *UserHandler) Login(
 	)
 
 	if err != nil {
-		response.Fail(c, err.Error())
+		respondUserAuthError(c, err)
 		return
 	}
 
@@ -67,10 +68,11 @@ func (h *UserHandler) Login(
 func (h *UserHandler) Profile(
 	c *gin.Context,
 ) {
-
-	userID := c.GetUint64(
-		"user_id",
-	)
+	userID, ok := currentUserID(c)
+	if !ok {
+		response.Unauthorized(c, "未授权")
+		return
+	}
 
 	user, err := h.service.GetProfile(
 		c.Request.Context(),
@@ -78,10 +80,7 @@ func (h *UserHandler) Profile(
 	)
 
 	if err != nil {
-		response.Fail(
-			c,
-			err.Error(),
-		)
+		respondUserError(c, err)
 		return
 	}
 
@@ -93,8 +92,11 @@ func (h *UserHandler) Profile(
 func (h *UserHandler) UpdateProfile(
 	c *gin.Context,
 ) {
-
-	userID := c.GetUint64("user_id")
+	userID, ok := currentUserID(c)
+	if !ok {
+		response.Unauthorized(c, "未授权")
+		return
+	}
 
 	var req dto.UpdateProfileRequest
 
@@ -113,7 +115,7 @@ func (h *UserHandler) UpdateProfile(
 	)
 
 	if err != nil {
-		response.Fail(c, err.Error())
+		respondUserError(c, err)
 		return
 	}
 
@@ -122,10 +124,11 @@ func (h *UserHandler) UpdateProfile(
 func (h *UserHandler) ChangePassword(
 	c *gin.Context,
 ) {
-
-	userID := c.GetUint64(
-		"user_id",
-	)
+	userID, ok := currentUserID(c)
+	if !ok {
+		response.Unauthorized(c, "未授权")
+		return
+	}
 
 	var req dto.ChangePasswordRequest
 
@@ -151,12 +154,7 @@ func (h *UserHandler) ChangePassword(
 	)
 
 	if err != nil {
-
-		response.Fail(
-			c,
-			err.Error(),
-		)
-
+		respondUserError(c, err)
 		return
 	}
 
@@ -164,4 +162,20 @@ func (h *UserHandler) ChangePassword(
 		c,
 		nil,
 	)
+}
+
+func currentUserID(
+	c *gin.Context,
+) (uint64, bool) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		return 0, false
+	}
+
+	id, ok := userID.(uint64)
+	if !ok || id == 0 {
+		return 0, false
+	}
+
+	return id, true
 }

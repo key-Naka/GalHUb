@@ -42,7 +42,10 @@ func (r *Repository) GetByID(
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
+
+		return nil, err
 	}
+
 	return ToDomain(&model), nil
 }
 func (r *Repository) Update(

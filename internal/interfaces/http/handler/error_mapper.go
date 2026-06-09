@@ -1,0 +1,63 @@
+package handler
+
+import (
+	"errors"
+	gameApp "galhub/internal/app/game"
+	userApp "galhub/internal/app/user"
+	"galhub/internal/pkg/response"
+	"log"
+
+	"github.com/gin-gonic/gin"
+)
+
+func respondInternalError(
+	c *gin.Context,
+	err error,
+) {
+	log.Printf("http handler internal error: %v", err)
+	response.Internal(c, "服务器内部错误")
+}
+
+func respondGameError(
+	c *gin.Context,
+	err error,
+) {
+	switch {
+	case errors.Is(err, gameApp.ErrGameNotFound):
+		response.NotFound(c, err.Error())
+	case errors.Is(err, gameApp.ErrInvalidPagination):
+		response.BadRequest(c, err.Error())
+	default:
+		respondInternalError(c, err)
+	}
+}
+
+func respondUserAuthError(
+	c *gin.Context,
+	err error,
+) {
+	switch {
+	case errors.Is(err, userApp.ErrUserNotFound), errors.Is(err, userApp.ErrInvalidPassword):
+		response.Unauthorized(c, "邮箱或密码错误")
+	default:
+		respondInternalError(c, err)
+	}
+}
+
+func respondUserError(
+	c *gin.Context,
+	err error,
+) {
+	switch {
+	case errors.Is(err, userApp.ErrInvalidCommand):
+		response.BadRequest(c, err.Error())
+	case errors.Is(err, userApp.ErrUserExists), errors.Is(err, userApp.ErrEmailExists):
+		response.Conflict(c, err.Error())
+	case errors.Is(err, userApp.ErrUserNotFound):
+		response.NotFound(c, err.Error())
+	case errors.Is(err, userApp.ErrInvalidPassword):
+		response.BadRequest(c, "旧密码错误")
+	default:
+		respondInternalError(c, err)
+	}
+}

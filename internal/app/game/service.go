@@ -45,17 +45,29 @@ func (s *Service) GetByID(
 	ctx context.Context,
 	id uint64,
 ) (*domain.Game, error) {
-
-	return s.repo.GetByID(
+	game, err := s.repo.GetByID(
 		ctx,
 		id,
 	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if game == nil {
+		return nil, ErrGameNotFound
+	}
+
+	return game, nil
 }
 func (s *Service) List(
 	ctx context.Context,
 	page int,
 	size int,
 ) ([]*domain.Game, error) {
+	if page < 1 || size < 1 {
+		return nil, ErrInvalidPagination
+	}
 
 	offset := (page - 1) * size
 
@@ -80,6 +92,10 @@ func (s *Service) Update(
 		return err
 	}
 
+	if game == nil {
+		return ErrGameNotFound
+	}
+
 	game.Title = cmd.Title
 	game.OriginalTitle = cmd.OriginalTitle
 	game.Cover = cmd.Cover
@@ -96,6 +112,18 @@ func (s *Service) Delete(
 	ctx context.Context,
 	id uint64,
 ) error {
+	game, err := s.repo.GetByID(
+		ctx,
+		id,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if game == nil {
+		return ErrGameNotFound
+	}
 
 	return s.repo.Delete(
 		ctx,

@@ -33,7 +33,7 @@ func (h *GameHandler) Create(
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 
-		response.Fail(
+		response.BadRequest(
 			c,
 			err.Error(),
 		)
@@ -48,9 +48,9 @@ func (h *GameHandler) Create(
 	)
 
 	if err != nil {
-		response.Fail(
+		response.BadRequest(
 			c,
-			"release_date format error",
+			"release_date 格式错误，应为 YYYY-MM-DD",
 		)
 		return
 	}
@@ -70,12 +70,7 @@ func (h *GameHandler) Create(
 	)
 
 	if err != nil {
-
-		response.Fail(
-			c,
-			err.Error(),
-		)
-
+		respondGameError(c, err)
 		return
 	}
 
@@ -91,7 +86,7 @@ func (h *GameHandler) GetByID(
 	id, err := utill.ParseID(c)
 
 	if err != nil {
-		response.Fail(c, "invalid id")
+		response.BadRequest(c, "无效的 id")
 		return
 	}
 
@@ -101,7 +96,7 @@ func (h *GameHandler) GetByID(
 	)
 
 	if err != nil {
-		response.Fail(c, err.Error())
+		respondGameError(c, err)
 		return
 	}
 
@@ -114,14 +109,11 @@ func (h *GameHandler) GetByID(
 func (h *GameHandler) List(
 	c *gin.Context,
 ) {
-
-	page, _ := strconv.Atoi(
-		c.DefaultQuery("page", "1"),
-	)
-
-	size, _ := strconv.Atoi(
-		c.DefaultQuery("size", "10"),
-	)
+	page, size, err := parsePageAndSize(c)
+	if err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
 
 	games, err := h.service.List(
 		c.Request.Context(),
@@ -130,7 +122,7 @@ func (h *GameHandler) List(
 	)
 
 	if err != nil {
-		response.Fail(c, err.Error())
+		respondGameError(c, err)
 		return
 	}
 
@@ -146,14 +138,14 @@ func (h *GameHandler) Update(
 	id, err := utill.ParseID(c)
 
 	if err != nil {
-		response.Fail(c, "invalid id")
+		response.BadRequest(c, "无效的 id")
 		return
 	}
 
 	var req dto.UpdateGameRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.Fail(c, err.Error())
+		response.BadRequest(c, err.Error())
 		return
 	}
 
@@ -162,9 +154,9 @@ func (h *GameHandler) Update(
 	)
 
 	if err != nil {
-		response.Fail(
+		response.BadRequest(
 			c,
-			"release_date format error",
+			"release_date 格式错误，应为 YYYY-MM-DD",
 		)
 		return
 	}
@@ -183,7 +175,7 @@ func (h *GameHandler) Update(
 	)
 
 	if err != nil {
-		response.Fail(c, err.Error())
+		respondGameError(c, err)
 		return
 	}
 
@@ -201,7 +193,7 @@ func (h *GameHandler) Delete(
 	id, err := utill.ParseID(c)
 
 	if err != nil {
-		response.Fail(c, "invalid id")
+		response.BadRequest(c, "无效的 id")
 		return
 	}
 
@@ -211,7 +203,7 @@ func (h *GameHandler) Delete(
 	)
 
 	if err != nil {
-		response.Fail(c, err.Error())
+		respondGameError(c, err)
 		return
 	}
 
@@ -221,4 +213,26 @@ func (h *GameHandler) Delete(
 			"id": id,
 		},
 	)
+}
+
+const maxPageSize = 100
+
+func parsePageAndSize(
+	c *gin.Context,
+) (int, int, error) {
+	page, err := strconv.Atoi(
+		c.DefaultQuery("page", "1"),
+	)
+	if err != nil || page < 1 {
+		return 0, 0, gameApp.ErrInvalidPagination
+	}
+
+	size, err := strconv.Atoi(
+		c.DefaultQuery("size", "10"),
+	)
+	if err != nil || size < 1 || size > maxPageSize {
+		return 0, 0, gameApp.ErrInvalidPagination
+	}
+
+	return page, size, nil
 }
