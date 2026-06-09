@@ -2,9 +2,9 @@ package handler
 
 import (
 	app "galhub/internal/app/user"
+	usercmd "galhub/internal/app/user/command"
 	dto "galhub/internal/interfaces/http/dto/user"
 	"galhub/internal/pkg/response"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,7 +25,7 @@ func (h *UserHandler) Register(
 	}
 	err := h.service.Register(
 		c.Request.Context(),
-		&app.RegisterCommand{
+		&usercmd.RegisterCommand{
 			Username: req.Username,
 			Email:    req.Email,
 			Password: req.Password,
@@ -51,7 +51,7 @@ func (h *UserHandler) Login(
 
 	user, err := h.service.Login(
 		c.Request.Context(),
-		app.LoginCommand{
+		&usercmd.LoginCommand{
 			Email:    req.Email,
 			Password: req.Password,
 		},
@@ -62,12 +62,7 @@ func (h *UserHandler) Login(
 		return
 	}
 
-	response.Success(c, gin.H{
-		"token":    user.Token,
-		"id":       user.ID,
-		"username": user.Username,
-		"email":    user.Email,
-	})
+	response.Success(c, user)
 }
 func (h *UserHandler) Profile(
 	c *gin.Context,
@@ -111,7 +106,7 @@ func (h *UserHandler) UpdateProfile(
 	err := h.service.UpdateProfile(
 		c.Request.Context(),
 		userID,
-		app.UpdateProfileCommand{
+		&usercmd.UpdateProfileCommand{
 			Nickname: req.Nickname,
 			Avatar:   req.Avatar,
 		},
@@ -149,7 +144,7 @@ func (h *UserHandler) ChangePassword(
 	err := h.service.ChangePassword(
 		c.Request.Context(),
 		userID,
-		app.ChangePasswordCommand{
+		&usercmd.ChangePasswordCommand{
 			OldPassword: req.OldPassword,
 			NewPassword: req.NewPassword,
 		},

@@ -13,11 +13,15 @@ func NewServices(
 	repos *Repositories,
 	cfg *config.Config,
 ) *Services {
+	jwtConfig := config.JWTConfig{}
+	if cfg != nil {
+		jwtConfig = cfg.JWT
+	}
 
 	return &Services{
 		User: appUser.NewService(
 			repos.User,
-			cfg.JWT,
+			jwtConfig,
 		),
 	}
 }
