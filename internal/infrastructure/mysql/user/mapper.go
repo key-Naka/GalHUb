@@ -31,5 +31,7 @@ func ToModel(u *domain.User) *UserModel {
 		Role:        u.Role,
 		Status:      u.Status,
 		LastLoginAt: u.LastLoginAt,
+		CreatedAt:   u.CreatedAt,
+		UpdatedAt:   u.UpdatedAt,
 	}
 }

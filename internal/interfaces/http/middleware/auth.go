@@ -14,7 +14,7 @@ func Auth(secret string) gin.HandlerFunc {
 
 		if tokenString == "" {
 			c.AbortWithStatusJSON(401, gin.H{
-				"msg": "unauthorized",
+				"msg": "未授权",
 			})
 			return
 		}
@@ -25,7 +25,7 @@ func Auth(secret string) gin.HandlerFunc {
 
 		if err != nil {
 			c.AbortWithStatusJSON(401, gin.H{
-				"msg": "invalid token",
+				"msg": "无效的token",
 			})
 			return
 		}

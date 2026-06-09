@@ -41,3 +41,64 @@ func (s *Service) Create(
 		game,
 	)
 }
+func (s *Service) GetByID(
+	ctx context.Context,
+	id uint64,
+) (*domain.Game, error) {
+
+	return s.repo.GetByID(
+		ctx,
+		id,
+	)
+}
+func (s *Service) List(
+	ctx context.Context,
+	page int,
+	size int,
+) ([]*domain.Game, error) {
+
+	offset := (page - 1) * size
+
+	return s.repo.List(
+		ctx,
+		offset,
+		size,
+	)
+}
+
+func (s *Service) Update(
+	ctx context.Context,
+	cmd command.UpdateGame,
+) error {
+
+	game, err := s.repo.GetByID(
+		ctx,
+		cmd.ID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	game.Title = cmd.Title
+	game.OriginalTitle = cmd.OriginalTitle
+	game.Cover = cmd.Cover
+	game.Description = cmd.Description
+	game.ReleaseDate = cmd.ReleaseDate
+	game.Status = cmd.Status
+
+	return s.repo.Update(
+		ctx,
+		game,
+	)
+}
+func (s *Service) Delete(
+	ctx context.Context,
+	id uint64,
+) error {
+
+	return s.repo.Delete(
+		ctx,
+		id,
+	)
+}

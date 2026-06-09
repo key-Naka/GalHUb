@@ -15,4 +15,11 @@ func RegisterGame(
 		"",
 		handler.Create,
 	)
+	group.GET("", handler.List)
+
+	group.GET("/:id", handler.GetByID)
+
+	group.PUT("/:id", handler.Update)
+
+	group.DELETE("/:id", handler.Delete)
 }

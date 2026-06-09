@@ -45,5 +45,8 @@ func ToModel(
 		FavoriteCount: g.FavoriteCount,
 
 		Status: g.Status,
+
+		CreatedAt: g.CreatedAt,
+		UpdatedAt: g.UpdatedAt,
 	}
 }
