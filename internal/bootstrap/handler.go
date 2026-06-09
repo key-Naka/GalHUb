@@ -6,6 +6,7 @@ import (
 
 type Handlers struct {
 	User *handler.UserHandler
+	Game *handler.GameHandler
 }
 
 func NewHandlers(
@@ -15,6 +16,9 @@ func NewHandlers(
 	return &Handlers{
 		User: handler.NewUserHandler(
 			services.User,
+		),
+		Game: handler.NewGameHandler(
+			services.Game,
 		),
 	}
 }

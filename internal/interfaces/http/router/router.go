@@ -35,6 +35,18 @@ func NewRouter(bs *bootstrap.Bootstrap) *gin.Engine {
 				},
 			},
 		},
+		{
+			Path:     "/api/v1/games",
+			NeedAuth: true,
+			RegisterFns: []func(*gin.RouterGroup){
+				func(g *gin.RouterGroup) {
+					RegisterGame(
+						g,
+						bs.Handlers.Game,
+					)
+				},
+			},
+		},
 	}
 	for _, route := range router {
 		var group *gin.RouterGroup
