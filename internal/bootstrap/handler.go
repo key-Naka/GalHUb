@@ -5,10 +5,12 @@ import (
 )
 
 type Handlers struct {
-	User    *handler.UserHandler
-	Game    *handler.GameHandler
-	Tag     *handler.TagHandler
-	GameTag *handler.GameTagHandler
+	User        *handler.UserHandler
+	Game        *handler.GameHandler
+	Tag         *handler.TagHandler
+	GameTag     *handler.GameTagHandler
+	Company     *handler.CompanyHandler
+	GameCompany *handler.GameCompanyHandler
 }
 
 func NewHandlers(
@@ -27,6 +29,12 @@ func NewHandlers(
 		),
 		GameTag: handler.NewGameTagHandler(
 			services.GameTag,
+		),
+		Company: handler.NewCompanyHandler(
+			services.Company,
+		),
+		GameCompany: handler.NewGameCompanyHandler(
+			services.GameCompany,
 		),
 	}
 }

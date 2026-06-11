@@ -1,7 +1,9 @@
 package bootstrap
 
 import (
+	appCompany "galhub/internal/app/company"
 	appGame "galhub/internal/app/game"
+	appGameCompany "galhub/internal/app/game_company"
 	appGameTag "galhub/internal/app/game_tag"
 	appTag "galhub/internal/app/tag"
 	appUser "galhub/internal/app/user"
@@ -9,10 +11,12 @@ import (
 )
 
 type Services struct {
-	User    *appUser.Service
-	Game    *appGame.Service
-	Tag     *appTag.Service
-	GameTag *appGameTag.Service
+	User        *appUser.Service
+	Game        *appGame.Service
+	Tag         *appTag.Service
+	GameTag     *appGameTag.Service
+	Company     *appCompany.Service
+	GameCompany *appGameCompany.Service
 }
 
 func NewServices(
@@ -38,6 +42,12 @@ func NewServices(
 		),
 		GameTag: appGameTag.NewService(
 			repos.GameTag,
+		),
+		Company: appCompany.NewService(
+			repos.Company,
+		),
+		GameCompany: appGameCompany.NewService(
+			repos.GameCompany,
 		),
 	}
 }

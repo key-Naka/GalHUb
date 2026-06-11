@@ -2,7 +2,9 @@ package handler
 
 import (
 	"errors"
+	companyApp "galhub/internal/app/company"
 	gameApp "galhub/internal/app/game"
+	gameCompanyApp "galhub/internal/app/game_company"
 	gameTagApp "galhub/internal/app/game_tag"
 	tagApp "galhub/internal/app/tag"
 	userApp "galhub/internal/app/user"
@@ -18,6 +20,30 @@ func respondInternalError(
 ) {
 	log.Printf("http handler internal error: %v", err)
 	response.Internal(c, "服务器内部错误")
+}
+
+func respondCompanyError(
+	c *gin.Context,
+	err error,
+) {
+	switch {
+	case errors.Is(err, companyApp.ErrCompanyNotFound):
+		response.NotFound(c, err.Error())
+	default:
+		respondInternalError(c, err)
+	}
+}
+
+func respondGameCompanyError(
+	c *gin.Context,
+	err error,
+) {
+	switch {
+	case errors.Is(err, gameCompanyApp.ErrGameCompanyNotFound):
+		response.NotFound(c, err.Error())
+	default:
+		respondInternalError(c, err)
+	}
 }
 
 func respondGameTagError(

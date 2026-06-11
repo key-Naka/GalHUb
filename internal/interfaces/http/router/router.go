@@ -48,6 +48,10 @@ func NewRouter(bs *bootstrap.Bootstrap) *gin.Engine {
 						g,
 						bs.Handlers.GameTag,
 					)
+					RegisterGameCompany(
+						g,
+						bs.Handlers.GameCompany,
+					)
 				},
 			},
 		},
@@ -59,6 +63,18 @@ func NewRouter(bs *bootstrap.Bootstrap) *gin.Engine {
 					RegisterTag(
 						g,
 						bs.Handlers.Tag,
+					)
+				},
+			},
+		},
+		{
+			Path:     "/api/v1/companies",
+			NeedAuth: true,
+			RegisterFns: []func(*gin.RouterGroup){
+				func(g *gin.RouterGroup) {
+					RegisterCompany(
+						g,
+						bs.Handlers.Company,
 					)
 				},
 			},
