@@ -105,6 +105,32 @@ func (h *GameHandler) GetByID(
 		game,
 	)
 }
+func (h *GameHandler) GetDetail(
+	c *gin.Context,
+) {
+
+	id, err := utill.ParseID(c)
+
+	if err != nil {
+		response.BadRequest(c, "无效的 id")
+		return
+	}
+
+	detail, err := h.service.GetDetail(
+		c.Request.Context(),
+		id,
+	)
+
+	if err != nil {
+		respondGameError(c, err)
+		return
+	}
+
+	response.Success(
+		c,
+		detail,
+	)
+}
 
 func (h *GameHandler) List(
 	c *gin.Context,

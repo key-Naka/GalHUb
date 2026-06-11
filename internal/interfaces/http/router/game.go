@@ -17,6 +17,7 @@ func RegisterGame(
 	)
 	group.GET("", handler.List)
 
+	group.GET("/:id/detail", handler.GetDetail)
 	group.GET("/:id", handler.GetByID)
 
 	group.PUT("/:id", handler.Update)

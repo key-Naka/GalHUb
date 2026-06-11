@@ -36,6 +36,10 @@ func NewServices(
 		),
 		Game: appGame.NewService(
 			repos.Game,
+			repos.Tag,
+			repos.GameTag,
+			repos.Company,
+			repos.GameCompany,
 		),
 		Tag: appTag.NewService(
 			repos.Tag,
