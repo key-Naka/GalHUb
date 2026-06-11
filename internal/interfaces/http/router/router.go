@@ -44,6 +44,22 @@ func NewRouter(bs *bootstrap.Bootstrap) *gin.Engine {
 						g,
 						bs.Handlers.Game,
 					)
+					RegisterGameTag(
+						g,
+						bs.Handlers.GameTag,
+					)
+				},
+			},
+		},
+		{
+			Path:     "/api/v1/tags",
+			NeedAuth: true,
+			RegisterFns: []func(*gin.RouterGroup){
+				func(g *gin.RouterGroup) {
+					RegisterTag(
+						g,
+						bs.Handlers.Tag,
+					)
 				},
 			},
 		},
