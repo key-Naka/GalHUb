@@ -1,4 +1,4 @@
-﻿package util
+package util
 
 import (
 	"fmt"
@@ -27,4 +27,3 @@ func ParsePositiveUintQuery(
 
 	return &parsed, nil
 }
-

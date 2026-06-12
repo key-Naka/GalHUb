@@ -1,4 +1,4 @@
-﻿package handler
+package handler
 
 import (
 	gameCompanyApp "galhub/internal/app/game_company"
@@ -78,4 +78,3 @@ func (h *GameCompanyHandler) GetCompanies(
 
 	response.Success(c, companyIDs)
 }
-

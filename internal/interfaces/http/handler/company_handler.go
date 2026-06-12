@@ -1,4 +1,4 @@
-﻿package handler
+package handler
 
 import (
 	companyApp "galhub/internal/app/company"
@@ -145,4 +145,3 @@ func (h *CompanyHandler) Delete(
 		},
 	)
 }
-

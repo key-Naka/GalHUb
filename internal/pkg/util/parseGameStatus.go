@@ -1,4 +1,4 @@
-﻿package util
+package util
 
 import (
 	"strconv"
@@ -26,4 +26,3 @@ func ParseGameStatus(
 		return int8(parsed), nil
 	}
 }
-

@@ -1,4 +1,4 @@
-﻿package handler
+package handler
 
 import (
 	"fmt"
@@ -301,4 +301,3 @@ func parseListGameQuery(
 
 	return result, nil
 }
-

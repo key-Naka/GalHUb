@@ -1,4 +1,4 @@
-﻿package handler
+package handler
 
 import (
 	gameTagApp "galhub/internal/app/game_tag"
@@ -78,4 +78,3 @@ func (h *GameTagHandler) GetTags(
 
 	response.Success(c, tagIDs)
 }
-

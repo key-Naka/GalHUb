@@ -1,4 +1,4 @@
-﻿package handler
+package handler
 
 import (
 	tagApp "galhub/internal/app/tag"
@@ -145,4 +145,3 @@ func (h *TagHandler) Delete(
 		},
 	)
 }
-
