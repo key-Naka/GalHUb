@@ -1,4 +1,4 @@
-package utill
+﻿package util
 
 import (
 	"strconv"
@@ -16,3 +16,4 @@ func ParseID(
 		64,
 	)
 }
+

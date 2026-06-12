@@ -1,11 +1,11 @@
-package handler
+﻿package handler
 
 import (
 	companyApp "galhub/internal/app/company"
 	"galhub/internal/app/company/command"
 	dto "galhub/internal/interfaces/http/dto/company"
 	"galhub/internal/pkg/response"
-	"galhub/internal/pkg/utill"
+	"galhub/internal/pkg/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,9 +49,9 @@ func (h *CompanyHandler) Create(
 func (h *CompanyHandler) GetByID(
 	c *gin.Context,
 ) {
-	id, err := utill.ParseID(c)
+	id, err := util.ParseID(c)
 	if err != nil {
-		response.BadRequest(c, "无效的 id")
+		response.BadRequest(c, "鏃犳晥鐨?id")
 		return
 	}
 
@@ -86,9 +86,9 @@ func (h *CompanyHandler) List(
 func (h *CompanyHandler) Update(
 	c *gin.Context,
 ) {
-	id, err := utill.ParseID(c)
+	id, err := util.ParseID(c)
 	if err != nil {
-		response.BadRequest(c, "无效的 id")
+		response.BadRequest(c, "鏃犳晥鐨?id")
 		return
 	}
 
@@ -122,9 +122,9 @@ func (h *CompanyHandler) Update(
 func (h *CompanyHandler) Delete(
 	c *gin.Context,
 ) {
-	id, err := utill.ParseID(c)
+	id, err := util.ParseID(c)
 	if err != nil {
-		response.BadRequest(c, "无效的 id")
+		response.BadRequest(c, "鏃犳晥鐨?id")
 		return
 	}
 
@@ -145,3 +145,4 @@ func (h *CompanyHandler) Delete(
 		},
 	)
 }
+

@@ -25,7 +25,6 @@ type Repository interface {
 
 	List(
 		ctx context.Context,
-		offset int,
-		limit int,
-	) ([]*Game, error)
+		query ListQuery,
+	) ([]*Game, int64, error)
 }

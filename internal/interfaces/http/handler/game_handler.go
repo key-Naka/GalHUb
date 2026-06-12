@@ -1,9 +1,10 @@
-package handler
+﻿package handler
 
 import (
+	"fmt"
 	gameApp "galhub/internal/app/game"
 	"galhub/internal/app/game/command"
-	"strconv"
+	"galhub/internal/app/game/query"
 
 	dto "galhub/internal/interfaces/http/dto/game"
 	"time"
@@ -11,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"galhub/internal/pkg/response"
-	"galhub/internal/pkg/utill"
+	"galhub/internal/pkg/util"
 )
 
 type GameHandler struct {
@@ -43,14 +44,14 @@ func (h *GameHandler) Create(
 
 	var releaseDate *time.Time
 
-	releaseDate, err := utill.ParseReleaseDate(
+	releaseDate, err := util.ParseReleaseDate(
 		req.ReleaseDate,
 	)
 
 	if err != nil {
 		response.BadRequest(
 			c,
-			"release_date 格式错误，应为 YYYY-MM-DD",
+			"release_date 鏍煎紡閿欒锛屽簲涓?YYYY-MM-DD",
 		)
 		return
 	}
@@ -83,10 +84,10 @@ func (h *GameHandler) GetByID(
 	c *gin.Context,
 ) {
 
-	id, err := utill.ParseID(c)
+	id, err := util.ParseID(c)
 
 	if err != nil {
-		response.BadRequest(c, "无效的 id")
+		response.BadRequest(c, "鏃犳晥鐨?id")
 		return
 	}
 
@@ -109,10 +110,10 @@ func (h *GameHandler) GetDetail(
 	c *gin.Context,
 ) {
 
-	id, err := utill.ParseID(c)
+	id, err := util.ParseID(c)
 
 	if err != nil {
-		response.BadRequest(c, "无效的 id")
+		response.BadRequest(c, "鏃犳晥鐨?id")
 		return
 	}
 
@@ -135,7 +136,7 @@ func (h *GameHandler) GetDetail(
 func (h *GameHandler) List(
 	c *gin.Context,
 ) {
-	page, size, err := parsePageAndSize(c)
+	listQuery, err := parseListGameQuery(c)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -143,8 +144,7 @@ func (h *GameHandler) List(
 
 	games, err := h.service.List(
 		c.Request.Context(),
-		page,
-		size,
+		listQuery,
 	)
 
 	if err != nil {
@@ -161,10 +161,10 @@ func (h *GameHandler) Update(
 	c *gin.Context,
 ) {
 
-	id, err := utill.ParseID(c)
+	id, err := util.ParseID(c)
 
 	if err != nil {
-		response.BadRequest(c, "无效的 id")
+		response.BadRequest(c, "鏃犳晥鐨?id")
 		return
 	}
 
@@ -175,14 +175,14 @@ func (h *GameHandler) Update(
 		return
 	}
 
-	releaseDate, err := utill.ParseReleaseDate(
+	releaseDate, err := util.ParseReleaseDate(
 		req.ReleaseDate,
 	)
 
 	if err != nil {
 		response.BadRequest(
 			c,
-			"release_date 格式错误，应为 YYYY-MM-DD",
+			"release_date 鏍煎紡閿欒锛屽簲涓?YYYY-MM-DD",
 		)
 		return
 	}
@@ -216,10 +216,10 @@ func (h *GameHandler) Delete(
 	c *gin.Context,
 ) {
 
-	id, err := utill.ParseID(c)
+	id, err := util.ParseID(c)
 
 	if err != nil {
-		response.BadRequest(c, "无效的 id")
+		response.BadRequest(c, "鏃犳晥鐨?id")
 		return
 	}
 
@@ -246,19 +246,59 @@ const maxPageSize = 100
 func parsePageAndSize(
 	c *gin.Context,
 ) (int, int, error) {
-	page, err := strconv.Atoi(
-		c.DefaultQuery("page", "1"),
+	page, size, err := util.ParsePageAndSize(
+		c,
+		maxPageSize,
 	)
-	if err != nil || page < 1 {
-		return 0, 0, gameApp.ErrInvalidPagination
-	}
-
-	size, err := strconv.Atoi(
-		c.DefaultQuery("size", "10"),
-	)
-	if err != nil || size < 1 || size > maxPageSize {
+	if err != nil {
 		return 0, 0, gameApp.ErrInvalidPagination
 	}
 
 	return page, size, nil
 }
+
+func parseListGameQuery(
+	c *gin.Context,
+) (query.ListGame, error) {
+	page, size, err := parsePageAndSize(c)
+	if err != nil {
+		return query.ListGame{}, err
+	}
+
+	result := query.ListGame{
+		Page:    page,
+		Size:    size,
+		Keyword: c.Query("keyword"),
+	}
+
+	tagID, err := util.ParsePositiveUintQuery(
+		c,
+		"tag_id",
+	)
+	if err != nil {
+		return query.ListGame{}, fmt.Errorf("鏃犳晥鐨?tag_id")
+	}
+	result.TagID = tagID
+
+	companyID, err := util.ParsePositiveUintQuery(
+		c,
+		"company_id",
+	)
+	if err != nil {
+		return query.ListGame{}, fmt.Errorf("鏃犳晥鐨?company_id")
+	}
+	result.CompanyID = companyID
+
+	statusValue := c.Query("status")
+	if statusValue != "" {
+		status, err := util.ParseGameStatus(statusValue)
+		if err != nil {
+			return query.ListGame{}, fmt.Errorf("鏃犳晥鐨?status")
+		}
+
+		result.Status = &status
+	}
+
+	return result, nil
+}
+

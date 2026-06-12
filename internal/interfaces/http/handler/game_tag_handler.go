@@ -1,11 +1,11 @@
-package handler
+﻿package handler
 
 import (
 	gameTagApp "galhub/internal/app/game_tag"
 	"galhub/internal/app/game_tag/command"
 	dto "galhub/internal/interfaces/http/dto/game_tag"
 	"galhub/internal/pkg/response"
-	"galhub/internal/pkg/utill"
+	"galhub/internal/pkg/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,9 +25,9 @@ func NewGameTagHandler(
 func (h *GameTagHandler) ReplaceTags(
 	c *gin.Context,
 ) {
-	gameID, err := utill.ParseID(c)
+	gameID, err := util.ParseID(c)
 	if err != nil {
-		response.BadRequest(c, "无效的 game_id")
+		response.BadRequest(c, "鏃犳晥鐨?game_id")
 		return
 	}
 
@@ -56,9 +56,9 @@ func (h *GameTagHandler) ReplaceTags(
 func (h *GameTagHandler) GetTags(
 	c *gin.Context,
 ) {
-	gameID, err := utill.ParseID(c)
+	gameID, err := util.ParseID(c)
 	if err != nil {
-		response.BadRequest(c, "无效的 game_id")
+		response.BadRequest(c, "鏃犳晥鐨?game_id")
 		return
 	}
 
@@ -78,3 +78,4 @@ func (h *GameTagHandler) GetTags(
 
 	response.Success(c, tagIDs)
 }
+

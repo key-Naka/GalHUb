@@ -1,11 +1,11 @@
-package handler
+﻿package handler
 
 import (
 	gameCompanyApp "galhub/internal/app/game_company"
 	"galhub/internal/app/game_company/command"
 	dto "galhub/internal/interfaces/http/dto/game_company"
 	"galhub/internal/pkg/response"
-	"galhub/internal/pkg/utill"
+	"galhub/internal/pkg/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,9 +25,9 @@ func NewGameCompanyHandler(
 func (h *GameCompanyHandler) ReplaceCompanies(
 	c *gin.Context,
 ) {
-	gameID, err := utill.ParseID(c)
+	gameID, err := util.ParseID(c)
 	if err != nil {
-		response.BadRequest(c, "无效的 game_id")
+		response.BadRequest(c, "鏃犳晥鐨?game_id")
 		return
 	}
 
@@ -56,9 +56,9 @@ func (h *GameCompanyHandler) ReplaceCompanies(
 func (h *GameCompanyHandler) GetCompanies(
 	c *gin.Context,
 ) {
-	gameID, err := utill.ParseID(c)
+	gameID, err := util.ParseID(c)
 	if err != nil {
-		response.BadRequest(c, "无效的 game_id")
+		response.BadRequest(c, "鏃犳晥鐨?game_id")
 		return
 	}
 
@@ -78,3 +78,4 @@ func (h *GameCompanyHandler) GetCompanies(
 
 	response.Success(c, companyIDs)
 }
+

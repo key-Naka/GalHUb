@@ -79,22 +79,37 @@ func (r *Repository) Delete(
 }
 func (r *Repository) List(
 	ctx context.Context,
-	offset int,
-	limit int,
-) ([]*domain.Game, error) {
+	query domain.ListQuery,
+) ([]*domain.Game, int64, error) {
 
 	var models []GameModel
+	var total int64
 
-	err := r.db.
-		WithContext(ctx).
-		Offset(offset).
-		Limit(limit).
+	countDB := r.applyListFilters(
+		r.db.
+			WithContext(ctx).
+			Model(&GameModel{}),
+		query,
+	)
+
+	if err := countDB.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	err := r.applyListFilters(
+		r.db.
+			WithContext(ctx).
+			Model(&GameModel{}),
+		query,
+	).
+		Offset(query.Offset).
+		Limit(query.Limit).
 		Order("id desc").
 		Find(&models).
 		Error
 
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	result := make([]*domain.Game, 0, len(models))
@@ -106,5 +121,67 @@ func (r *Repository) List(
 		)
 	}
 
-	return result, nil
+	return result, total, nil
+}
+
+func (r *Repository) applyListFilters(
+	db *gorm.DB,
+	query domain.ListQuery,
+) *gorm.DB {
+	if query.Keyword != "" {
+		keyword := "%" + query.Keyword + "%"
+
+		db = db.Where(
+			`title LIKE ? OR original_title LIKE ? OR EXISTS (
+				SELECT 1
+				FROM game_tags gt
+				INNER JOIN tags t ON t.id = gt.tag_id
+				WHERE gt.game_id = games.id
+				AND t.name LIKE ?
+			) OR EXISTS (
+				SELECT 1
+				FROM game_companies gc
+				INNER JOIN companies c ON c.id = gc.company_id
+				WHERE gc.game_id = games.id
+				AND c.name LIKE ?
+			)`,
+			keyword,
+			keyword,
+			keyword,
+			keyword,
+		)
+	}
+
+	if query.TagID != nil {
+		db = db.Where(
+			`EXISTS (
+				SELECT 1
+				FROM game_tags gt
+				WHERE gt.game_id = games.id
+				AND gt.tag_id = ?
+			)`,
+			*query.TagID,
+		)
+	}
+
+	if query.CompanyID != nil {
+		db = db.Where(
+			`EXISTS (
+				SELECT 1
+				FROM game_companies gc
+				WHERE gc.game_id = games.id
+				AND gc.company_id = ?
+			)`,
+			*query.CompanyID,
+		)
+	}
+
+	if query.Status != nil {
+		db = db.Where(
+			"status = ?",
+			*query.Status,
+		)
+	}
+
+	return db
 }

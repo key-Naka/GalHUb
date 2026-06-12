@@ -1,4 +1,4 @@
-package utill
+﻿package util
 
 import (
 	"time"
@@ -23,3 +23,4 @@ func ParseReleaseDate(
 
 	return &t, nil
 }
+

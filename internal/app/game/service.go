@@ -201,20 +201,143 @@ func (s *Service) GetDetail(
 }
 func (s *Service) List(
 	ctx context.Context,
-	page int,
-	size int,
-) ([]*domain.Game, error) {
-	if page < 1 || size < 1 {
+	q query.ListGame,
+) (*query.ListGameResult, error) {
+	if q.Page < 1 || q.Size < 1 {
 		return nil, ErrInvalidPagination
 	}
 
-	offset := (page - 1) * size
+	offset := (q.Page - 1) * q.Size
 
-	return s.repo.List(
+	games, total, err := s.repo.List(
 		ctx,
-		offset,
-		size,
+		domain.ListQuery{
+			Offset:    offset,
+			Limit:     q.Size,
+			Keyword:   q.Keyword,
+			TagID:     q.TagID,
+			CompanyID: q.CompanyID,
+			Status:    q.Status,
+		},
 	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := &query.ListGameResult{
+		List:  make([]*query.ListGameItem, 0, len(games)),
+		Total: total,
+		Page:  q.Page,
+		Size:  q.Size,
+	}
+
+	tagNameCache := make(map[uint64]string)
+	companyNameCache := make(map[uint64]string)
+
+	for _, game := range games {
+		item := &query.ListGameItem{
+			ID: game.ID,
+
+			Title:         game.Title,
+			OriginalTitle: game.OriginalTitle,
+
+			Cover:       game.Cover,
+			Description: game.Description,
+
+			ReleaseDate: game.ReleaseDate,
+
+			ViewCount:     game.ViewCount,
+			FavoriteCount: game.FavoriteCount,
+
+			Status: game.Status,
+
+			Tags:      make([]string, 0),
+			Companies: make([]string, 0),
+
+			CreatedAt: game.CreatedAt,
+			UpdatedAt: game.UpdatedAt,
+		}
+
+		tagIDs, err := s.gameTagRepo.GetTagIDsByGameID(
+			ctx,
+			game.ID,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		for _, tagID := range tagIDs {
+			tagName, ok := tagNameCache[tagID]
+
+			if !ok {
+				tag, err := s.tagRepo.GetByID(
+					ctx,
+					tagID,
+				)
+
+				if err != nil {
+					return nil, err
+				}
+
+				if tag == nil {
+					continue
+				}
+
+				tagName = tag.Name
+				tagNameCache[tagID] = tagName
+			}
+
+			item.Tags = append(
+				item.Tags,
+				tagName,
+			)
+		}
+
+		companyIDs, err := s.gameCompanyRepo.GetCompanyIDsByGameID(
+			ctx,
+			game.ID,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		for _, companyID := range companyIDs {
+			companyName, ok := companyNameCache[companyID]
+
+			if !ok {
+				company, err := s.companyRepo.GetByID(
+					ctx,
+					companyID,
+				)
+
+				if err != nil {
+					return nil, err
+				}
+
+				if company == nil {
+					continue
+				}
+
+				companyName = company.Name
+				companyNameCache[companyID] = companyName
+			}
+
+			item.Companies = append(
+				item.Companies,
+				companyName,
+			)
+		}
+
+		result.List = append(
+			result.List,
+			item,
+		)
+	}
+
+	return result, nil
 }
 
 func (s *Service) Update(

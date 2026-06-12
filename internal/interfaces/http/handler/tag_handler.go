@@ -1,11 +1,11 @@
-package handler
+﻿package handler
 
 import (
 	tagApp "galhub/internal/app/tag"
 	"galhub/internal/app/tag/command"
 	dto "galhub/internal/interfaces/http/dto/tag"
 	"galhub/internal/pkg/response"
-	"galhub/internal/pkg/utill"
+	"galhub/internal/pkg/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,9 +49,9 @@ func (h *TagHandler) Create(
 func (h *TagHandler) GetByID(
 	c *gin.Context,
 ) {
-	id, err := utill.ParseID(c)
+	id, err := util.ParseID(c)
 	if err != nil {
-		response.BadRequest(c, "无效的 id")
+		response.BadRequest(c, "鏃犳晥鐨?id")
 		return
 	}
 
@@ -86,9 +86,9 @@ func (h *TagHandler) List(
 func (h *TagHandler) Update(
 	c *gin.Context,
 ) {
-	id, err := utill.ParseID(c)
+	id, err := util.ParseID(c)
 	if err != nil {
-		response.BadRequest(c, "无效的 id")
+		response.BadRequest(c, "鏃犳晥鐨?id")
 		return
 	}
 
@@ -122,9 +122,9 @@ func (h *TagHandler) Update(
 func (h *TagHandler) Delete(
 	c *gin.Context,
 ) {
-	id, err := utill.ParseID(c)
+	id, err := util.ParseID(c)
 	if err != nil {
-		response.BadRequest(c, "无效的 id")
+		response.BadRequest(c, "鏃犳晥鐨?id")
 		return
 	}
 
@@ -145,3 +145,4 @@ func (h *TagHandler) Delete(
 		},
 	)
 }
+
