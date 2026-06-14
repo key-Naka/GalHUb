@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	companyApp "galhub/internal/app/company"
+	favoriteApp "galhub/internal/app/favorite"
 	gameApp "galhub/internal/app/game"
 	gameCompanyApp "galhub/internal/app/game_company"
 	gameTagApp "galhub/internal/app/game_tag"
@@ -79,6 +80,22 @@ func respondGameError(
 		response.NotFound(c, err.Error())
 	case errors.Is(err, gameApp.ErrInvalidPagination):
 		response.BadRequest(c, err.Error())
+	default:
+		respondInternalError(c, err)
+	}
+}
+
+func respondFavoriteError(
+	c *gin.Context,
+	err error,
+) {
+	switch {
+	case errors.Is(err, favoriteApp.ErrInvalidPagination):
+		response.BadRequest(c, err.Error())
+	case errors.Is(err, favoriteApp.ErrFavoriteExists):
+		response.Conflict(c, err.Error())
+	case errors.Is(err, favoriteApp.ErrFavoriteNotFound), errors.Is(err, favoriteApp.ErrGameNotFound):
+		response.NotFound(c, err.Error())
 	default:
 		respondInternalError(c, err)
 	}

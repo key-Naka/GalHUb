@@ -22,7 +22,11 @@ func NewRouter(bs *bootstrap.Bootstrap) *gin.Engine {
 			NeedAuth: false,
 			RegisterFns: []func(*gin.RouterGroup){
 				func(g *gin.RouterGroup) {
-					RegisterUserPublic(g, bs.Handlers.User)
+					RegisterUserPublic(
+						g,
+						bs.Handlers.User,
+						bs.Handlers.Favorite,
+					)
 				},
 			},
 		},
@@ -63,6 +67,18 @@ func NewRouter(bs *bootstrap.Bootstrap) *gin.Engine {
 					RegisterTag(
 						g,
 						bs.Handlers.Tag,
+					)
+				},
+			},
+		},
+		{
+			Path:     "/api/v1/favorites",
+			NeedAuth: true,
+			RegisterFns: []func(*gin.RouterGroup){
+				func(g *gin.RouterGroup) {
+					RegisterFavorite(
+						g,
+						bs.Handlers.Favorite,
 					)
 				},
 			},

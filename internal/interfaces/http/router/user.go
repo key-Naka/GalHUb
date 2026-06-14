@@ -9,6 +9,7 @@ import (
 func RegisterUserPublic(
 	group *gin.RouterGroup,
 	handler *handler.UserHandler,
+	favoriteHandler *handler.FavoriteHandler,
 ) {
 
 	group.POST(
@@ -19,6 +20,11 @@ func RegisterUserPublic(
 	group.POST(
 		"/login",
 		handler.Login,
+	)
+
+	group.GET(
+		"/:id/favorites",
+		favoriteHandler.ListByUserID,
 	)
 
 }

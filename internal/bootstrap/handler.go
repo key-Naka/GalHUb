@@ -7,6 +7,7 @@ import (
 type Handlers struct {
 	User        *handler.UserHandler
 	Game        *handler.GameHandler
+	Favorite    *handler.FavoriteHandler
 	Tag         *handler.TagHandler
 	GameTag     *handler.GameTagHandler
 	Company     *handler.CompanyHandler
@@ -23,6 +24,9 @@ func NewHandlers(
 		),
 		Game: handler.NewGameHandler(
 			services.Game,
+		),
+		Favorite: handler.NewFavoriteHandler(
+			services.Favorite,
 		),
 		Tag: handler.NewTagHandler(
 			services.Tag,

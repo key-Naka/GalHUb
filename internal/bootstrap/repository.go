@@ -4,6 +4,7 @@ import (
 	mysqlDB "galhub/internal/infrastructure/mysql"
 
 	mysqlCompany "galhub/internal/infrastructure/mysql/company"
+	mysqlFavorite "galhub/internal/infrastructure/mysql/favorite"
 	mysqlGame "galhub/internal/infrastructure/mysql/game"
 	mysqlGameCompany "galhub/internal/infrastructure/mysql/game_company"
 	mysqlGameTag "galhub/internal/infrastructure/mysql/game_tag"
@@ -11,6 +12,7 @@ import (
 	mysqlUser "galhub/internal/infrastructure/mysql/user"
 
 	domainCompany "galhub/internal/domain/company"
+	domainFavorite "galhub/internal/domain/favorite"
 	domainGame "galhub/internal/domain/game"
 	domainGameCompany "galhub/internal/domain/game_company"
 	domainGameTag "galhub/internal/domain/game_tage"
@@ -21,6 +23,7 @@ import (
 type Repositories struct {
 	User        domainUser.Repository
 	Game        domainGame.Repository
+	Favorite    domainFavorite.Repository
 	Tag         domainTag.Repository
 	GameTag     domainGameTag.Repository
 	Company     domainCompany.Repository
@@ -34,6 +37,9 @@ func NewRepositories() *Repositories {
 			mysqlDB.DB,
 		),
 		Game: mysqlGame.NewRepository(
+			mysqlDB.DB,
+		),
+		Favorite: mysqlFavorite.NewRepository(
 			mysqlDB.DB,
 		),
 		Tag: mysqlTag.NewRepository(
